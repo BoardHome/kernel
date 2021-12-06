@@ -132,10 +132,6 @@
 	status = "disabled";
 };
 
-&wdt {
-	status = "disabled";
-};
-
 &io_domains {
 	bt656-supply = <&vcc_3v0>;
 };
@@ -151,9 +147,6 @@
 };
 
 &pinctrl {
-	pinctrl-names = "default";
-	pinctrl-0 = <&host_hub_vcc>;
-
 	npu_pwr_en {
 		// control VCC5V0_HOST3
 		npu5801_pwr_en: npu5801-pwr-en {
