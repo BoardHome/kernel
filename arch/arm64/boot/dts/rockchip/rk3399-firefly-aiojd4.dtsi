@@ -200,12 +200,11 @@
 &u2phy0 {
     status = "okay";
     /delete-property/ extcon;
+};
 
-    u2phy0_otg: otg-port {
-        rockchip,vbus-always-on;
-        vbus-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
-        status = "okay";
-    };
+&u2phy0_otg {
+    vbus-supply = <&vcc5v0_otg>;
+    status = "okay";
 };
 
 &usbdrd3_0 {
