@@ -145,6 +145,10 @@
 #define RT5640_DUMMY2				0xfb
 #define RT5640_DUMMY3				0xfc
 
+/* General Control1 (0xfa) */
+#define RT5640_M_MAMIX_L			(0x1 << 13)
+#define RT5640_M_MAMIX_R			(0x1 << 12)
+
 
 /* Index of Codec Private Register definition */
 #define RT5640_BIAS_CUR4			0x15
@@ -2132,6 +2136,15 @@ struct rt5640_priv {
 	int bclk[RT5640_AIFS];
 	int master[RT5640_AIFS];
 
+	/* IN1 & IN2 & IN3 can optionally be differential */
+	bool in1_diff;
+	bool in2_diff;
+	bool in3_diff;
+
+	bool dmic_en;
+	bool dmic1_data_pin; /* 0 = IN1P; 1 = GPIO3 */
+	bool dmic2_data_pin; /* 0 = IN1N; 1 = GPIO4 */
+
 	int pll_src;
 	int pll_in;
 	int pll_out;
@@ -2139,20 +2152,19 @@ struct rt5640_priv {
 	bool hp_mute;
 	bool asrc_en;
 
-	/* Jack and button detect data */
-	bool ovcd_irq_enabled;
-	bool pressed;
-	bool press_reported;
-	int press_count;
-	int release_count;
-	int poll_count;
-	struct delayed_work bp_work;
-	struct work_struct jack_work;
-	struct snd_soc_jack *jack;
-	unsigned int jd_src;
-	bool jd_inverted;
-	unsigned int ovcd_th;
-	unsigned int ovcd_sf;
+	struct delayed_work adc_poll_work;
+	struct delayed_work hp_det_gpio_poll_work;
+	struct iio_channel *chan;
+	int hp_det_adc_value;
+	struct delayed_work adc_aux_work;
+	struct iio_channel *aux_chan;
+	int aux_det_adc_value;
+	bool hp_insert;
+	bool linein_mute;
+	int hp_con_gpio;
+	int hp_det_gpio;
+	bool hp_con_gpio_active_high;
+	struct snd_soc_jack hp_jack;
 };
 
 int rt5640_dmic_enable(struct snd_soc_component *component,
