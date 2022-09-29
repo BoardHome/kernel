@@ -132,6 +132,7 @@ struct gsl_ts {
 	struct workqueue_struct *wq;
 	struct gsl_ts_data *dd;
 	spinlock_t irq_lock;
+	int flag_irq_is_disable;
 	u8 *touch_data;
 	u8 device_id;
 	int irq;
@@ -172,7 +173,10 @@ static void gsl_ts_irq_disable(struct gsl_ts *ts)
 	unsigned long irqflags;
 
 	spin_lock_irqsave(&ts->irq_lock, irqflags);
-	disable_irq_nosync(ts->client->irq);
+	if (!ts->flag_irq_is_disable) {
+		disable_irq_nosync(ts->client->irq);
+		ts->flag_irq_is_disable = 1;
+	}
 	spin_unlock_irqrestore(&ts->irq_lock, irqflags);
 }
 
@@ -181,7 +185,10 @@ static void gsl_ts_irq_enable(struct gsl_ts *ts)
 	unsigned long irqflags = 0;
 
 	spin_lock_irqsave(&ts->irq_lock, irqflags);
-	enable_irq(ts->client->irq);
+	if (ts->flag_irq_is_disable) {
+		enable_irq(ts->client->irq);
+		ts->flag_irq_is_disable = 0;
+	}
 	spin_unlock_irqrestore(&ts->irq_lock, irqflags);
 }
 
@@ -1062,6 +1069,7 @@ static int gsl_ts_probe(struct i2c_client *client,
 	init_chip(ts->client);
 	check_mem_data(ts->client);
 
+	ts->flag_irq_is_disable = 0;
 	spin_lock_init(&ts->irq_lock);
 
 	ts->irq = gpio_to_irq(ts->irq_pin);		/*If not defined in client*/
