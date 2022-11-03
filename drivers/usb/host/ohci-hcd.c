@@ -1002,8 +1002,12 @@ static void ohci_stop (struct usb_hcd *hcd)
 
 	ohci_writel (ohci, OHCI_INTR_MIE, &ohci->regs->intrdisable);
 	ohci_usb_reset(ohci);
-	free_irq(hcd->irq, hcd);
-	hcd->irq = 0;
+
+	/*
+	 * Don't clear hcd->irq because the hcd restart work
+	 * need it if hcd has died. And don't free irq because
+	 * the usb_remove_hcd can free irq later.
+	 */
 
 	if (quirk_amdiso(ohci))
 		usb_amd_dev_put();
