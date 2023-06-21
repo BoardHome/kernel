@@ -309,3 +309,7 @@
 			};
 	};
 };
+
+&PCIE_RK1808_OPTIMIZATION {
+	status = "okay";
+};
