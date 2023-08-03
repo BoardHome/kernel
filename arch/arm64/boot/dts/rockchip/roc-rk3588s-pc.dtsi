@@ -109,6 +109,15 @@
 		compatible = "firefly-wake";
 		status = "okay";
 	};
+
+	vbus-switch {
+		compatible = "reg-userspace-consumer";
+		regulator-name = "vbus-consumer";
+		regulator-boot-on;
+		regulator-supplies = "vcc";
+		vcc-supply = <&vcc5v0_host>;
+		comment = "Usb vbus switch";
+	};
 };
 
 /* es8323 audio codec */
