@@ -1962,6 +1962,7 @@
 		companion = <&usb_host0_ohci>;
 		phys = <&u2phy2_host>;
 		phy-names = "usb2-phy";
+		use-hs-only;
 		power-domains = <&power RK3588_PD_USB>;
 		status = "disabled";
 	};
@@ -1987,6 +1988,7 @@
 		companion = <&usb_host1_ohci>;
 		phys = <&u2phy3_host>;
 		phy-names = "usb2-phy";
+		use-hs-only;
 		power-domains = <&power RK3588_PD_USB>;
 		status = "disabled";
 	};
