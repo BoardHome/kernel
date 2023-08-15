@@ -269,7 +269,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi1m2_cs0 &spi1m2_pins>;
 	num-cs = <1>;
-	status = "okay";
+	status = "disabled";
 };
 
 /* PMIC spi2 */
