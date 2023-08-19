@@ -2370,49 +2370,6 @@ static void hcd_died_work(struct work_struct *work)
 
 	/* Notify user space that the host controller has died */
 	kobject_uevent_env(&hcd->self.root_hub->dev.kobj, KOBJ_OFFLINE, env);
-
-	/* Handle the case where this function gets called with a shared HCD */
-	if (usb_hcd_is_primary_hcd(hcd))
-		schedule_work(&hcd->restart_work);
-	else
-		schedule_work(&hcd->primary_hcd->restart_work);
-}
-
-/* Workqueue routine for restart the root-hub if it has died. */
-static void hcd_restart_work(struct work_struct *work)
-{
-	struct usb_hcd *hcd = container_of(work, struct usb_hcd, restart_work);
-	int retval;
-
-	if (!hcd || hcd->irq <= 0) {
-		pr_err("failed to restart hcd\n");
-		return;
-	}
-
-	dev_info(hcd->self.controller, "restart hcd now\n");
-
-	/* remove all hcd */
-	if (hcd->shared_hcd)
-		usb_remove_hcd(hcd->shared_hcd);
-	usb_remove_hcd(hcd);
-
-	/* register hcd again */
-	retval = usb_add_hcd(hcd, hcd->irq, IRQF_SHARED);
-	if (retval) {
-		dev_err(hcd->self.controller, "fail to add hcd %d", retval);
-		return;
-	}
-
-	if (hcd->shared_hcd) {
-		retval = usb_add_hcd(hcd->shared_hcd, hcd->irq, IRQF_SHARED);
-		if (retval) {
-			dev_err(hcd->self.controller,
-				"fail to add shared_hcd %d", retval);
-			usb_remove_hcd(hcd);
-			return;
-		}
-	}
-
 }
 
 /**
@@ -2529,7 +2486,6 @@ struct usb_hcd *__usb_create_hcd(const struct hc_driver *driver,
 #endif
 
 	INIT_WORK(&hcd->died_work, hcd_died_work);
-	INIT_WORK(&hcd->restart_work, hcd_restart_work);
 
 	hcd->driver = driver;
 	hcd->speed = driver->flags & HCD_MASK;

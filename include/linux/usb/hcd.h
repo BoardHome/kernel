@@ -100,7 +100,6 @@ struct usb_hcd {
 	struct work_struct	wakeup_work;	/* for remote wakeup */
 #endif
 	struct work_struct	died_work;	/* for when the device dies */
-	struct work_struct	restart_work;	/* for restart hcd after died */
 
 	/*
 	 * hardware info/state

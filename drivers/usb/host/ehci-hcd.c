@@ -847,12 +847,8 @@ restart:
 dead:
 		usb_hc_died(hcd);
 
-		/*
-		 * Don't let the controller do anything more
-		 * Don't set shutdown, then the usb core hcd
-		 * can restart the ehci later and resume ehci.
-		 */
-
+		/* Don't let the controller do anything more */
+		ehci->shutdown = true;
 		ehci->rh_state = EHCI_RH_STOPPING;
 		ehci->command &= ~(CMD_RUN | CMD_ASE | CMD_PSE);
 		ehci_writel(ehci, ehci->command, &ehci->regs->command);
