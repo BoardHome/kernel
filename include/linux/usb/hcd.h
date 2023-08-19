@@ -125,6 +125,7 @@ struct usb_hcd {
 #define HCD_FLAG_RH_RUNNING		5	/* root hub is running? */
 #define HCD_FLAG_DEAD			6	/* controller has died? */
 #define HCD_FLAG_INTF_AUTHORIZED	7	/* authorize interfaces? */
+#define HCD_FLAG_POWER_ON              9       /* power on */
 
 	/* The flags can be tested using these macros; they are likely to
 	 * be slightly faster than test_bit().
@@ -150,6 +151,8 @@ struct usb_hcd {
 	 * settable through /sys/class/usb_host/X/authorized_default
 	 */
 	enum usb_dev_authorize_policy dev_policy;
+
+#define HCD_POWER_ON(hcd)      ((hcd)->flags & (1U << HCD_FLAG_POWER_ON))
 
 	/* Flags that get set only during HCD registration or removal. */
 	unsigned		rh_registered:1;/* is root hub registered? */

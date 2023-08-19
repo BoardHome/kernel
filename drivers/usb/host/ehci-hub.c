@@ -1175,7 +1175,7 @@ int ehci_hub_control(
 			goto error;
 		wIndex--;
 		temp = ehci_readl(ehci, status_reg);
-		if (temp & PORT_OWNER)
+		if ((temp & PORT_OWNER) && (!HCD_POWER_ON(hcd)))
 			break;
 
 		temp &= ~PORT_RWC_BITS;
@@ -1225,6 +1225,7 @@ int ehci_hub_control(
 			if (HCS_PPC(ehci->hcs_params)) {
 				spin_unlock_irqrestore(&ehci->lock, flags);
 				ehci_port_power(ehci, wIndex, true);
+				clear_bit(HCD_FLAG_POWER_ON, &hcd->flags);
 				spin_lock_irqsave(&ehci->lock, flags);
 			}
 			break;
